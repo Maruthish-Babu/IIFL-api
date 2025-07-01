@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: iiflapi 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iiflapi
+  template:
+    metadata:
+      labels:
+        app: iiflapi 
+    spec:
+      containers:
+        - name: iiflapi 
+          image: myiiflcontainerregistry.azurecr.io/iiflapi
+          ports:
+          - containerPort: 8080
