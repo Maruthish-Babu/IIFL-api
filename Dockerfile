@@ -1,39 +1,50 @@
-# Stage 1: Build the application
-FROM node:18 AS builder
+###################
+# BUILD FOR LOCAL DEVELOPMENT
+####################
 
-# Set working directory
+FROM node:20.12.0-alpine3.19 As development
+
 WORKDIR /usr/src/app
 
-# Install dependencies
-COPY package*.json ./
-RUN npm install
+COPY --chown=node:node package*.json ./
 
-# Copy the .env file
-COPY .env .env
+RUN npm ci
 
-# Copy application source code
-COPY . .
+COPY --chown=node:node . .
 
-# Build the application
+USER node
+
+###################
+# BUILD FOR PRODUCTION
+###################
+
+FROM node:20.12.0-alpine3.19 As build
+
+WORKDIR /usr/src/app
+
+COPY --chown=node:node package*.json ./
+
+COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
+
+COPY --chown=node:node . .
+
 RUN npm run build
 
-# Stage 2: Create a lightweight runtime image
-FROM node:18-slim
+ENV NODE_ENV production
 
-# Set working directory
-WORKDIR /usr/src/app
+RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
-# Copy built application and dependencies
-COPY --from=builder /usr/src/app/package*.json ./
-COPY --from=builder /usr/src/app/dist ./dist
-# Copy the default .env file
-COPY .env .env 
-# Copy the production .env file if needed
-COPY .env.prod .env.prod 
-RUN npm install --only=production
+USER node
 
-# Expose the application port
-EXPOSE 8080
+###################
+# PRODUCTION
+###################
 
-# Define the command to run the application
-CMD ["node", "dist/main.js"]
+FROM node:20.12.0-alpine3.19 As production
+
+COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+COPY --chown=node:node --from=build /usr/src/app/.env.prod ./.env.prod
+
+
+CMD [ "node", "dist/main.js" ]
