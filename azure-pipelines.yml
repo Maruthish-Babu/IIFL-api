@@ -86,6 +86,11 @@ stages:
                 $(imagePullSecret)
               containers: |
                 $(containerRegistry)/$(imageRepository):$(tag)
+              
+              substitutions: |
+                NAME=$(NAME)
+                WISH=$(WISH)
+  
 
   - deployment: DeployPullRequest
     displayName: Deploy Pull request
