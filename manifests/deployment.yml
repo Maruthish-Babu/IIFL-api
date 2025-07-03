@@ -17,8 +17,4 @@ spec:
           image: myiiflcontainerregistry.azurecr.io/iiflapi
           ports:
           - containerPort: 8080
-          env:
-          - name: NAME
-            value: "{{NAME}}"
-          - name: WISH
-            value: "{{WISH}}"
+          

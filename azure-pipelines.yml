@@ -28,6 +28,18 @@ variables:
   - name: k8sNamespaceForPR
     value: 'review-app-$(System.PullRequest.PullRequestId)'
 
+jobs:
+- job: GenerateEnvFile
+  displayName: 'Generate .env File'
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - script: |
+      echo "Generating .env file from all environment variables..."
+      printenv > .env
+    displayName: 'Create .env file from all environment variables'
+
+
 stages:
 - stage: Build
   displayName: Build stage
@@ -87,9 +99,6 @@ stages:
               containers: |
                 $(containerRegistry)/$(imageRepository):$(tag)
               
-              substitutions: |
-                NAME=$(NAME)
-                WISH=$(WISH)
   
 
   - deployment: DeployPullRequest
