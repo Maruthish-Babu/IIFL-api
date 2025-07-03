@@ -21,6 +21,7 @@ variables:
   # Agent VM image name
   vmImageName: 'Default'
 
+
   # Name of the new namespace being created to deploy the PR changes.
   k8sNamespaceForPR: 'review-app-$(System.PullRequest.PullRequestId)'
 
@@ -42,6 +43,13 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+
+    - script: |
+        sed -i "s|{{PORT}}|$PORT|g" .env.prod
+        sed -i "s|{{NODE_ENV}}|$NODE_ENV|g" .env.prod
+        sed -i "s|{{NAME}}|$NAME|g" .env.prod
+      displayName: "Inject runtime values into .env.prod"
+      
 
     - upload: manifests
       artifact: manifests
