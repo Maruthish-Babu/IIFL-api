@@ -39,12 +39,13 @@ stages:
   - job: GenerateEnvFile
     displayName: 'Generate .env File'
     pool:
-      vmImage: ubuntu-latest
+      name : $(vmImageName)
     steps:
     - script: |
         echo "Generating .env file from all environment variables..."
         printenv > .env
       displayName: 'Create .env file from all environment variables'
+
   - job: Build
     displayName: Build
     pool:
