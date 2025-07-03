@@ -7,6 +7,7 @@ export class AppConfigService {
 
     this.envConfig.cred = {
       name: process.env.NAME,
+      wish: process.env.WISH,
     };
   }
 
