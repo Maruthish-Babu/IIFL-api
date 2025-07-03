@@ -48,9 +48,15 @@ stages:
         cp .env.prod .env
 
         # Loop through all environment variables and replace matching placeholders
+        
+        
         while IFS='=' read -r key value; do
-          sed -i "s/{{${key}}}/${value}/g" .env
+          # Escape special characters in the value
+          safe_value=$(printf '%s\n' "$value" | sed 's/[|&]/\\&/g')
+          sed -i "s|{{${key}}}|${safe_value}|g" .env.prod
         done < <(env)
+
+
       displayName: 'Generate .env dynamically'
 
 
