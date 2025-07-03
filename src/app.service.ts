@@ -6,6 +6,6 @@ export class AppService {
   constructor(private readonly appConfigSvc: AppConfigService) {}
   getHello(): any {
     const { name } = this.appConfigSvc.get('cred');
-    return name ? 'HELLO ' + name : 'Hello World!';
+    return name ? 'HELLO ' + name : 'Hello World!!';
   }
 }
