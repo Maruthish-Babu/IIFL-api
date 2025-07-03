@@ -42,9 +42,17 @@ stages:
       name : $(vmImageName)
     steps:
     - script: |
-        echo "Generating .env file from all environment variables..."
-        printenv > .env
-      displayName: 'Create .env file from all environment variables'
+        echo "Replacing placeholders in .env..."
+    
+        # Copy the template to a working file
+        cp .env.prod .env
+
+        # Loop through all environment variables and replace matching placeholders
+        while IFS='=' read -r key value; do
+          sed -i "s/{{${key}}}/${value}/g" .env
+        done < <(env)
+      displayName: 'Generate .env dynamically'
+
 
   - job: Build
     displayName: Build
