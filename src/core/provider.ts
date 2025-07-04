@@ -10,7 +10,7 @@ const getEnvFilePath = (): string => {
 };
 
 const importProviders = (): any[] => {
-  return [ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true })];
+  return [ConfigModule.forRoot({ envFilePath: '.env.prod', isGlobal: true })];
 };
 const getProviders = (): any[] => {
     return [AppConfigService];
