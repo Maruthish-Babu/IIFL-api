@@ -42,28 +42,23 @@ stages:
       name : $(vmImageName)
     steps:
     - script: |
-
-        echo "Injecting variables into .env.prod..."
-
-        # Ensure Azure DevOps variables are present as env vars
-        export PORT=$(PORT)
-        export NAME=$(NAME)
-        export WISH=$(WISH)
-
-        echo "Generating .env.prod from template..."
-
-
-        # Make a temp .env.prod with actual values
+        echo "Replacing placeholders in .env.prod..."
+        
+        # Make a copy
         cp .env.prod .env.temp
 
-        while IFS='=' read -r key value; do
-          safe_value=$(printf '%s\n' "$value" | sed 's/[|&]/\\&/g')
-          sed -i "s|{{${key}}}|${safe_value}|g" .env.temp
-        done < <(env)
+        # Manually replace each variable (safe and clear)
+        sed -i "s|{{PORT}}|$(PORT)|g" .env.temp
+        sed -i "s|{{NAME}}|$(NAME)|g" .env.temp
+        sed -i "s|{{WISH}}|$(WISH)|g" .env.temp
 
+        # Overwrite the original .env.prod
         mv .env.temp .env.prod
 
+        echo "Updated .env.prod content:"
+        cat .env.prod
       displayName: 'Inject environment variables into .env.prod'
+
 
 
 
