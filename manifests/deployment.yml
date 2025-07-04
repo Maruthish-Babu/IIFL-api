@@ -14,7 +14,29 @@ spec:
     spec:
       containers:
         - name: iiflapi 
-          image: myiiflcontainerregistry.azurecr.io/iiflapi
+          image: myiiflcontainerregistry.azurecr.io/iiflapi:$(Build.BuildId)
           ports:
           - containerPort: 8080
-          
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: iiflapi-secret
+                  key: NODE_ENV
+            - name: PORT
+              valueFrom:
+                secretKeyRef:
+                  name: iiflapi-secret
+                  key: PORT
+            - name: NAME
+              valueFrom:
+                secretKeyRef:
+                  name: iiflapi-secret
+                  key: NAME
+            - name: WISH
+              valueFrom:
+                secretKeyRef:
+                  name: iiflapi-secret
+                  key: WISH      
+      imagePullSecrets:
+        - name: myiiflcontainerregistry6296-auth

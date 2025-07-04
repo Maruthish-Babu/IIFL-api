@@ -42,9 +42,12 @@ USER node
 
 FROM node:20.12.0-alpine3.19 As production
 
+WORKDIR /usr/src/app
+
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 COPY --chown=node:node --from=build /usr/src/app/.env.prod ./.env.prod
 
+USER node
 
 CMD [ "node", "dist/main.js" ]

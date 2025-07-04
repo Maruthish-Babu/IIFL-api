@@ -42,22 +42,20 @@ stages:
       name : $(vmImageName)
     steps:
     - script: |
-        echo "Replacing placeholders in .env..."
-    
-        # Copy the template to a working file
-        cp .env.prod .env
+        echo "Generating .env.prod from template..."
 
-        # Loop through all environment variables and replace matching placeholders
-        
-        
+        # Make a temp .env.prod with actual values
+        cp .env.prod .env.temp
+
         while IFS='=' read -r key value; do
-          # Escape special characters in the value
           safe_value=$(printf '%s\n' "$value" | sed 's/[|&]/\\&/g')
-          sed -i "s|{{${key}}}|${safe_value}|g" .env.prod
+          sed -i "s|{{${key}}}|${safe_value}|g" .env.temp
         done < <(env)
 
+        # Replace original .env.prod with the real one
+        mv .env.temp .env.prod
+      displayName: 'Inject environment variables into .env.prod'
 
-      displayName: 'Generate .env dynamically'
 
 
   - job: Build
@@ -102,6 +100,13 @@ stages:
               action: createSecret
               secretName: $(imagePullSecret)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+
+          - task: KubernetesManifest@0
+            displayName: Create k8s environment secret
+            inputs:
+              action: deploy
+              manifests: |
+                $(Pipeline.Workspace)/manifests/secret.yml
 
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
