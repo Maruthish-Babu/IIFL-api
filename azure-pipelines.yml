@@ -43,6 +43,7 @@ stages:
         sed -i "s|{{PORT}}|$PORT|g" .env.prod
         sed -i "s|{{NODE_ENV}}|$NODE_ENV|g" .env.prod
         sed -i "s|{{NAME}}|$NAME|g" .env.prod
+        sed -i "s|{{WISH}}|$WISH|g" .env.prod
       displayName: "Inject runtime values into .env.prod"
     - task: Docker@2
       displayName: Build and push an image to container registry
