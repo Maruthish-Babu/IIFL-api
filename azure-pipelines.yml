@@ -41,23 +41,11 @@ stages:
     pool:
       name : $(vmImageName)
     steps:
-    - script: |
-        echo "Replacing placeholders in .env.prod..."
-        
-        # Make a copy
-        cp .env.prod .env.prod
-
-        # Manually replace each variable (safe and clear)
-        sed -i "s|{{PORT}}|$(PORT)|g" .env.prod
-        sed -i "s|{{NAME}}|$(NAME)|g" .env.prod
-        sed -i "s|{{WISH}}|$(WISH)|g" .env.prod
-
-        # Overwrite the original .env.prod
-        mv .env.prod .env.prod
-
-        echo "Updated .env.prod content:"
-        cat .env.prod
-      displayName: 'Inject environment variables into .env.prod'
+     - script: |
+        sed -i "s|{{PORT}}|$PORT|g" .env.prod
+        sed -i "s|{{NODE_ENV}}|$NODE_ENV|g" .env.prod
+        sed -i "s|{{NAME}}|$NAME|g" .env.prod
+    displayName: "Inject runtime values into .env.prod"
 
 
 
